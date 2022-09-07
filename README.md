@@ -19,12 +19,14 @@ and even nested lists!
 2. Entry 2
     - Entry 2.1
     - Entry 2.3
-And so on...
-Use links [Google](https://www.google.ru/), <yandex.ru> and ![even pictures!](https://imgur.com/r/cats/XXheode)
+    - And so on...
+***
+Use links [Google](https://www.google.ru/), <yandex.ru> and ![even pictures!](https://i.imgur.com/QGrQUk9.jpg)
 Tables are also possible with ***Markdown***
 > You can even use quotes!
 >> And even nested quotes!
 >>> Wonders, isn't it?
+***
 ` supports different programming languague format too `
 ```csharp
 public int myFunc(int a, int b)
