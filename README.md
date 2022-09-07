@@ -4,7 +4,7 @@ It is possible to use headers of various levels:
 # Header L1...
 ## Header L2...
 ### Header L3...
-Up to 6 level. 
+Up to sixth level. 
 Some text shenanigans too! *italic text* **bold text** ***both italic and bold text*** ~~crossed out text~~
 You can create lists:
 - Entry 1
@@ -19,4 +19,14 @@ and even nested lists!
   - Entry 2.1
   - Entry 2.3
 And so on...
-Use links [Google] (https://www.google.ru/) and ![even pictures!] (https://imgur.com/r/cats/XXheode)
+Use links [Google] (https://www.google.ru/), <yandex.ru> and ! [even pictures!] (https://imgur.com/r/cats/XXheode)
+Tables are also possible with ***Markdown***
+> You can even use quotes!
+>> And even nested quotes!
+>>> Wonders, isn't it?
+` supports different programming languague format too `
+```csharp
+public int myFunc(int a, int b)
+{ return a + b ; }
+```
+
