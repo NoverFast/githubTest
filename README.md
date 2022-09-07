@@ -21,7 +21,10 @@ and even nested lists!
     - Entry 2.3
     - And so on...
 ***
-Use links [Google](https://www.google.ru/), <https://yandex.ru/> and ![even pictures!](https://i.imgur.com/QGrQUk9.jpg)
+Use links [Google](https://www.google.ru/), <https://yandex.ru/> and ![even pictures!](https://imgur.com/r/cats/63Qg7mz)
+It is also possible to use links via tags: [GitHub][tag1]
+[tag1]: https://github.com/
+***
 Tables are also possible with ***Markdown***
 | R1 C1 | R1 C2 |
 | --- | --- |
