@@ -21,8 +21,12 @@ and even nested lists!
     - Entry 2.3
     - And so on...
 ***
-Use links [Google](https://www.google.ru/), <yandex.ru> and ![even pictures!](https://i.imgur.com/QGrQUk9.jpg)
+Use links [Google](https://www.google.ru/), <https://yandex.ru/> and ![even pictures!](https://i.imgur.com/QGrQUk9.jpg)
 Tables are also possible with ***Markdown***
+| R1 C1 | R1 C2 |
+| --- | --- |
+| R2 C1 | R2 C2 |
+***
 > You can even use quotes!
 >> And even nested quotes!
 >>> Wonders, isn't it?
