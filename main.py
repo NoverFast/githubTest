@@ -1,12 +1,4 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import math
-
-
-def customFunc(x):
-    return 1
 
 def matrix_multiply_vector(matrix, vector):
     sum = 0
@@ -79,7 +71,6 @@ def simple_iterations(matrix, start_vector, free_coefs, epsilon):
     print(f"Answer is: {answer_vector}")
     return answer_vector
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     matrix_multiply_vector([[1, 2, 3], [4, 5, 6], [7, 8, 9]], [2, 3, 4])
     start_vector = [0, 0, 0, 0, 0, 0, 0]
@@ -98,7 +89,3 @@ if __name__ == '__main__':
     print("solving SLAE without numpy")
     simple_iterations(matrix, start_vector, free_coefs, 0.01)
 
-
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
