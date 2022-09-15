@@ -1,13 +1,10 @@
 import math
-<<<<<<< HEAD
 import numpy as np
 import scipy.integrate as integrate
 import matplotlib.pyplot as plt
 
 def customFunc(x):
     return 1
-=======
->>>>>>> 2e52f3590cfabfd741495580a6e375dcacafd9d4
 
 def matrix_multiply_vector(matrix, vector):
     sum = 0
@@ -60,6 +57,7 @@ def findGammaBorders(matrix):
     gamma1 = min(sum_vector)
     print(f"gamma 1: {gamma1}")
     return (gamma1, gamma2)
+
 # (x^(n+1) - x^n) / tau + Ax^n = f => x^(n+1) = x^n - tau(Ax_n - b)
 def simple_iterations(matrix, start_vector, free_coefs, epsilon):
     counter = 0
@@ -80,7 +78,6 @@ def simple_iterations(matrix, start_vector, free_coefs, epsilon):
     print(f"Answer is: {answer_vector}")
     return answer_vector
 
-<<<<<<< HEAD
 def simple_iterations_np(matrixx, free_coefss, epsilon:float):
     matrix = np.array(matrixx)
     free_coefs = np.array(free_coefss)
@@ -103,8 +100,7 @@ def simple_iterations_np(matrixx, free_coefss, epsilon:float):
     return answer_vector
 
 # Press the green button in the gutter to run the script.
-=======
->>>>>>> 2e52f3590cfabfd741495580a6e375dcacafd9d4
+
 if __name__ == '__main__':
 
     print("\tTask 1\t\n")
@@ -122,7 +118,6 @@ if __name__ == '__main__':
     print(f"Matrix: {matrix}")
     print(f"Start vector: {start_vector}")
 
-<<<<<<< HEAD
     epsilon = [0.01, 0.001, 0.0001]
     f, ax = plt.subplots(1, 3, figsize=(9, 3))
     for i in range(3):
@@ -141,5 +136,3 @@ if __name__ == '__main__':
     print('quadrature: ',"{0:.5f}".format(integrate.quadrature(integralFunc,0,1)[0]))
     print('trapezoid: ',"{0:.5f}".format(integrate.trapz(integralFunc(xx),x=xx)))
     print('simpson: ',"{0:.5f}".format(integrate.simpson(integralFunc(xx),x=xx)))
-=======
->>>>>>> 2e52f3590cfabfd741495580a6e375dcacafd9d4
