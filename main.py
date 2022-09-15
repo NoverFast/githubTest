@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import scipy.integrate as integrate
+import scipy.signal as sig
 import matplotlib.pyplot as plt
 
 def customFunc(x):
@@ -32,6 +33,12 @@ def vector_diff(vector1, vector2):
     for i in range(len(vector1)):
         new_vector.append(vector1[i] - vector2[i])
     return new_vector
+
+def integralFunc(x):
+    return np.cosh(x**2)
+
+def signalFunc(x):
+    return math.sin(16*x) + math.cos(17*x)
 
 def findGammaBorders(matrix):
     sum = 0
@@ -99,8 +106,6 @@ def simple_iterations_np(matrixx, free_coefss, epsilon:float):
 
     return answer_vector
 
-# Press the green button in the gutter to run the script.
-
 if __name__ == '__main__':
 
     print("\tTask 1\t\n")
@@ -128,11 +133,23 @@ if __name__ == '__main__':
     plt.show()
 
     print('\tTask 2\t\n')
-
-    def integralFunc(x): return np.cosh(x**2)
     xx = np.linspace(0,1,num=100)
 
     print('quad: ',"{0:.5f}".format(integrate.quad(integralFunc,0,1)[0]))
     print('quadrature: ',"{0:.5f}".format(integrate.quadrature(integralFunc,0,1)[0]))
     print('trapezoid: ',"{0:.5f}".format(integrate.trapz(integralFunc(xx),x=xx)))
     print('simpson: ',"{0:.5f}".format(integrate.simpson(integralFunc(xx),x=xx)))
+
+    print('\tTask 3\t\n')
+
+    (signalFreq, step) = np.linspace(-2 * np.pi, 2 * np.pi, 125, retstep=True)
+    signalAmp = np.array([signalFunc(x) for x in signalFreq])
+    print("signal frequencies")
+    print(signalFreq)
+    print("signal amplitudes")
+    print(signalAmp)
+    noise = [np.random.normal(0, 0.5) for i in range(len(signalFreq))]
+    noisySigAmp = signalAmp + noise
+    plt.plot(signalFreq, signalAmp)
+    plt.plot(signalFreq, noisySigAmp)
+    plt.show()
