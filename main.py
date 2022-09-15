@@ -3,7 +3,9 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import math
-
+import numpy as np
+import scipy.integrate as integrate
+import matplotlib.pyplot as plt
 
 def customFunc(x):
     return 1
@@ -70,7 +72,7 @@ def simple_iterations(matrix, start_vector, free_coefs, epsilon):
         answer_vector = current_iteration_vector.copy()
         start_vector = vector_diff(matrix_multiply_vector(matrix, answer_vector), free_coefs)
         for i in range(len(matrix[0])):
-            current_iteration_vector[i] = answer_vector[i] - tau * start_vector[i]
+            current_iteration_vector[i] = answer_vector[i] - 0.01 * start_vector[i]
         start_vector.clear()
         print(f"norm: {vector_norm(vector_diff(current_iteration_vector, answer_vector))}")
         if (vector_norm(vector_diff(current_iteration_vector, answer_vector)) < epsilon):
@@ -79,9 +81,31 @@ def simple_iterations(matrix, start_vector, free_coefs, epsilon):
     print(f"Answer is: {answer_vector}")
     return answer_vector
 
+def simple_iterations_np(matrixx, free_coefss, epsilon:float):
+    matrix = np.array(matrixx)
+    free_coefs = np.array(free_coefss)
+
+    mat_shape = np.shape(matrix)
+    current_iteration_vector = np.zeros(mat_shape[1])
+    while (True):
+        answer_vector = current_iteration_vector.copy()
+        start_vector = np.matmul(matrix, answer_vector) - free_coefs
+
+        for i in range(mat_shape[1]):
+            current_iteration_vector[i] = answer_vector[i] - 0.01 * start_vector[i]
+        start_vector = np.zeros(mat_shape[1])
+        #print(f"norm: {np.linalg.norm(current_iteration_vector - answer_vector)}")
+        if (np.linalg.norm( current_iteration_vector - answer_vector) < epsilon):
+            break
+    print(f"Found solution with given precision {epsilon}")
+    print(f"Answer is: {answer_vector}")
+
+    return answer_vector
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    matrix_multiply_vector([[1, 2, 3], [4, 5, 6], [7, 8, 9]], [2, 3, 4])
+
+    print("\tTask 1\t\n")
     start_vector = [0, 0, 0, 0, 0, 0, 0]
     free_coefs = [1, 1, 1, 1, 1, 1, 1]
     matrix = [[16, 1, 2, 0, 0, 0, 0],
@@ -95,10 +119,22 @@ if __name__ == '__main__':
     print(f"Free coefs: {free_coefs}")
     print(f"Matrix: {matrix}")
     print(f"Start vector: {start_vector}")
-    print("solving SLAE without numpy")
-    simple_iterations(matrix, start_vector, free_coefs, 0.01)
 
+    epsilon = [0.01, 0.001, 0.0001]
+    f, ax = plt.subplots(1, 3, figsize=(9, 3))
+    for i in range(3):
+        ax[i].plot(simple_iterations(matrix, start_vector, free_coefs, epsilon[i]))
+        ax[i].plot(simple_iterations_np(matrix, free_coefs, epsilon[i]))
+        ax[i].legend(['Without NumPy', 'Numpy'])
+        ax[i].set_title(f"Epsilon: {epsilon[i]}")
+    plt.show()
 
+    print('\tTask 2\t\n')
 
+    def integralFunc(x): return np.cosh(x**2)
+    xx = np.linspace(0,1,num=100)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    print('quad: ',"{0:.5f}".format(integrate.quad(integralFunc,0,1)[0]))
+    print('quadrature: ',"{0:.5f}".format(integrate.quadrature(integralFunc,0,1)[0]))
+    print('trapezoid: ',"{0:.5f}".format(integrate.trapz(integralFunc(xx),x=xx)))
+    print('simpson: ',"{0:.5f}".format(integrate.simpson(integralFunc(xx),x=xx)))
