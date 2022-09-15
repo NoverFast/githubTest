@@ -150,6 +150,15 @@ if __name__ == '__main__':
     print(signalAmp)
     noise = [np.random.normal(0, 0.5) for i in range(len(signalFreq))]
     noisySigAmp = signalAmp + noise
-    plt.plot(signalFreq, signalAmp)
-    plt.plot(signalFreq, noisySigAmp)
+    f, plots = plt.subplots(1, 5, figsize=(50, 4))
+    plots[0].plot(signalFreq, signalAmp)
+    plots[0].legend(["Clear Signal"])
+    plots[1].plot(signalFreq, noisySigAmp)
+    plots[1].legend(["Noisy Signal"])
+    plots[2].plot(sig.wiener(noisySigAmp))
+    plots[2].legend(["Wiener filter"])
+    plots[3].plot(sig.medfilt(noisySigAmp))
+    plots[3].legend(["Median filter"])
+    plots[4].plot(sig.savgol_filter(noisySigAmp, 5, 2))
+    plots[4].legend(["Savitzky-Golay filter"])
     plt.show()
