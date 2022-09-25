@@ -4,9 +4,37 @@ import sys
 import time
 import numpy
 import matplotlib.pyplot
+import numpy as np
+from numba import jit
 
+def DEBUG_ValuesOutput():
+    # Вывод левой части СЛАУ
+    print('Border values: \n')
+    for i in range(n):
+        print(f'{u0[i]}', sep='', end='\t\t')
+        if ((i + 1) % ny == 0):
+            print()
+    # Вывод правой части СЛАУ
+    print('\nFree coefs: \n')
+    for i in range(len(f)):
+        print(f'{f[i]}', sep=' ', end='')
+    # Вывод красных/чёрных узлов
+    print('Black-Red nodes: \n')
+    print(f'Length of black: {len(black)}; length of red: {len(red)}')
+    print('\nBlacks')
+    for i in range(len(black)):
+        print(black[i], sep='', end='\t\t')
+        if ((i + 1) % ny == 0):
+            print()
+    print('\nReds')
+    for i in range(len(red)):
+        print(red[i], sep='', end='\t\t')
+        if ((i + 1) % ny == 0):
+            print()
 
-def GaussZeidel(a1, an, ai, u1, u0):
+#@jit(nopython=False)
+def GaussZeidel(u1, u0, black, red, f):
+    residual = []
     iter_num = 0
     diff = eps + 1
     while diff > eps:
@@ -28,38 +56,70 @@ def GaussZeidel(a1, an, ai, u1, u0):
 
         # Текущая итерация принимает значение следующей
         u0, u1 = u1, u0
-        diff = math.sqrt(diff)
+        diff = numpy.sqrt(diff)
         residual.append(diff)
-        print(f'Difference: {diff}')
+        #print(f'Difference: {diff}')
+        print(diff)
 
         iter_num += 1
-    return iter_num, u0
+    return iter_num, u0, residual
 
+#@jit(nopython=False)
+def res_f(x, y):
+    return numpy.exp(-y * y / 4.0 - x * x / 16.0) * numpy.sin(x * x + y * y)
 
-def DEBUG_ValuesOutput():
-    # Вывод левой части СЛАУ
-    print('Border values: \n')
-    for i in range(n):
-        print(f'{u0[i]}', sep='', end='\t\t')
-        if ((i + 1) % ny == 0):
-            print()
-    # Вывод правой части СЛАУ
-    print('\nFree coefs: \n')
-    for i in range(len(f)):
-        print(f'{f[i]}')
-    # Вывод красных/чёрных узлов
-    print('Black-Red nodes: \n')
-    print(f'Length of black: {len(black)}; length of red: {len(red)}')
-    print('\nBlacks')
-    for i in range(len(black)):
-        print(black[i], sep='', end='\t\t')
-        if ((i + 1) % ny == 0):
-            print()
-    print('\nReds')
-    for i in range(len(red)):
-        print(red[i], sep='', end='\t\t')
-        if ((i + 1) % ny == 0):
-            print()
+#@jit(nopython=False)
+def FillMatrix(nx, ny, step_x, step_y, u0, u1, f):
+    # Заполнение
+    for i in range(nx):
+        x2 = (i * step_x) ** 2
+        for j in range(ny):
+            y2 = (j * step_y) ** 2
+            x2y2 = x2 + y2
+
+            f[i * ny + j] = (-1.0 / 64.0) \
+                            * numpy.exp(-(1.0 / 16.0) * x2 - (1.0 / 4.0) * y2) \
+                            * ( \
+                                        (255.0 * x2 + 240.0 * y2 + 40.0) * numpy.sin(x2y2) \
+                                        + (32.0 * x2 + 128.0 * y2 + 256.0) * numpy.cos(x2y2) \
+                                )
+    # Заполнение
+    for i in range(1, nx - 1):
+        for j in range(1, ny - 1):
+            u0[i * ny + j] = 0
+            u1[i * ny + j] = 0
+    # Установка граничных условий
+    for j in range(nx):
+        u0[j * ny] = res_f(j * step_x, 0)
+        u0[(j + 1) * ny - 1] = res_f(j * step_x, jy - step_y)
+        u1[j * ny] = res_f(j * step_x, 0)
+        u1[(j + 1) * ny - 1] = res_f(j * step_x, jy - step_y)
+    for i in range(1, ny - 1):
+        u0[i] = res_f(0, i * step_y);
+        u0[(nx - 1) * ny + i] = res_f(ix - step_x, i * step_y);
+        u1[i] = res_f(0, i * step_y);
+        u1[(nx - 1) * ny + i] = res_f(ix - step_x, i * step_y);
+    return  u0, u1, f
+
+#@jit(nopython=False)
+def AssignIndicies(red, black):
+    clr1 = False
+    clr2 = False
+    indr = 0
+    indb = 0
+    for i in range(1, nx - 1):
+        clr1 = clr1 == 0
+        clr2 = clr1
+
+        for j in range(1, ny - 1):
+            if clr2:
+                red[indr] = i * ny + j
+                indr += 1
+            else:
+                black[indb] = i * ny + j
+                indb += 1
+            clr2 = clr2 == 0
+    return red, black
 
 
 if __name__ == '__main__':
@@ -79,11 +139,9 @@ if __name__ == '__main__':
 
     print('Calculation started')
     td = time.time()
-    
+
     # Невязка
     residual = []
-    # Искомая функция
-    res_f = lambda x, y: math.exp(-y * y / 4.0 - x * x / 16.0) * math.sin(x * x + y * y)
 
     # Элементы матрицы системы
     a1 = 1.0 / step_x / step_x
@@ -105,70 +163,25 @@ if __name__ == '__main__':
     bnum = int((nx - 2) * (ny - 2) - rnum)
 
     # Значения искомой функции на текущей и предыдущей итерации
-    u0 = [0] * nx * ny
-    u1 = [0] * nx * ny
+    u0 = np.zeros(nx * ny, dtype=float)
+    u1 = np.zeros(nx * ny, dtype=float)
     # Правая часть уравнения Пуассона
-    f = [0] * n
+    f = np.zeros(n, dtype=float)
     # Номера узлов (для распределения переменных по шашечной схеме)
-    red = [0] * rnum
-    black = [0] * bnum
+    red = np.zeros(rnum, dtype=int)
+    black = np.zeros(rnum, dtype=int)
 
-    # Заполнение
-    for i in range(nx):
-        x2 = (i * step_x) ** 2
-        for j in range(ny):
-            y2 = (j * step_y) ** 2
-            x2y2 = x2 + y2
-
-            f[i * ny + j] = (-1.0 / 64.0) \
-							* math.exp(-(1.0 / 16.0) * x2 - (1.0 / 4.0) * y2) \
-							* (\
-							(255.0 * x2 + 240.0 * y2 + 40.0) * math.sin(x2y2) \
-							+ (32.0 * x2 + 128.0 * y2 + 256.0) * math.cos(x2y2) \
-							)
-
-    # Заполнение
-    for i in range(1, nx - 1):
-        for j in range(1, ny - 1):
-            u0[i * ny + j] = 0
-            u1[i * ny + j] = 0
-    # Установка граничных условий
-    for j in range(nx):
-        u0[j * ny] = res_f(j * step_x, 0)
-        u0[(j + 1) * ny - 1] = res_f(j * step_x, jy - step_y)
-        u1[j * ny] = res_f(j * step_x, 0)
-        u1[(j + 1) * ny - 1] = res_f(j * step_x, jy - step_y)
-    for i in range(1, ny - 1):
-        u0[i] = res_f(0, i * step_y);
-        u0[(nx - 1) * ny + i] = res_f(ix - step_x, i * step_y);
-        u1[i] = res_f(0, i * step_y);
-        u1[(nx - 1) * ny + i] = res_f(ix - step_x, i * step_y);
+    u0, u1, f = FillMatrix(nx, ny, step_x, step_y, u0, u1, f)
 
     # Эта часть нужна для распараллеливания
     # Выбор красных и чёрных узлов
-    clr1 = False
-    clr2 = False
-    indr = 0
-    indb = 0
-
-    for i in range(1, nx - 1):
-        clr1 = clr1 == 0
-        clr2 = clr1
-
-        for j in range(1, ny - 1):
-            if clr2:
-                red[indr] = i * ny + j
-                indr += 1
-            else:
-                black[indb] = i * ny + j
-                indb += 1
-            clr2 = clr2 == 0
+    red, black = AssignIndicies(red, black)
 
     if (debug == True):
         DEBUG_ValuesOutput()
     print('Assigned all values. Beginning calculation\n\n\n')
     # Решение системы методом Гаусса-Зейделя
-    iter_num, u0 = GaussZeidel(a1, an, ai, u1, u0)
+    iter_num, u0, residual = GaussZeidel(u1, u0, black, red, f)
 
     td = time.time() - td
 
