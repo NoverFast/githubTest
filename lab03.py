@@ -32,7 +32,7 @@ def DEBUG_ValuesOutput():
         if ((i + 1) % ny == 0):
             print()
 
-#@jit(nopython=False)
+@jit(nopython=True)
 def GaussZeidel(u1, u0, black, red, f):
     residual = []
     iter_num = 0
@@ -64,11 +64,11 @@ def GaussZeidel(u1, u0, black, red, f):
         iter_num += 1
     return iter_num, u0, residual
 
-#@jit(nopython=False)
+@jit(nopython=True)
 def res_f(x, y):
     return numpy.exp(-y * y / 4.0 - x * x / 16.0) * numpy.sin(x * x + y * y)
 
-#@jit(nopython=False)
+@jit(nopython=True)
 def FillMatrix(nx, ny, step_x, step_y, u0, u1, f):
     # Заполнение
     for i in range(nx):
@@ -101,7 +101,7 @@ def FillMatrix(nx, ny, step_x, step_y, u0, u1, f):
         u1[(nx - 1) * ny + i] = res_f(ix - step_x, i * step_y);
     return  u0, u1, f
 
-#@jit(nopython=False)
+@jit(nopython=True)
 def AssignIndicies(red, black):
     clr1 = False
     clr2 = False
