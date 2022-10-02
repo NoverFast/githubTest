@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QAbstractTableModel, Qt
+from PyQt5.QtCore import QAbstractTableModel, Qt, QAbstractListModel
 from PyQt5.QtGui import QPainter
 
 class Rectangle():
@@ -25,16 +25,13 @@ class Rectangle():
     def GetHeight(self):
         return self.height
 
-class CustomModel(QAbstractTableModel):
-    def __init__(self, parent=None):
+class CustomModel(QAbstractListModel):
+    def __init__(self, rects, parent=None):
         super().__init__(parent)
-        self.data = []
-        for i in range(16):
-            self.data.append(Rectangle(i, i, 5 * i, 10 * i))
-            print(self.data[i].Information())
+        self._rects = rects
 
-    def rowCount(self, count, parent=None):
-        return 4
+    def rowCount(self, parent=None):
+        return len(self._rects)
 
     def columnCount(self, parent=None):
         return 4
@@ -42,8 +39,9 @@ class CustomModel(QAbstractTableModel):
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
         col = index.column()
+
         # generate a log message when this method gets called
         print(f"row {row}, col{col}, role {role}")
 
         if role == Qt.DisplayRole:
-            return f"{self.data[index.row()].Information()}"
+            return f"{self._rects[row].Area()}"

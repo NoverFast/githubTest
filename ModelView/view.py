@@ -17,12 +17,18 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Lab 4")
         self.setGeometry(300, 300, 350, 100)
         self.resize(600, 600)
+        myrects = []
+        for i in range(16):
+            myrects.append(Rectangle(i, i, i * 16, i * 16))
+        model = CustomModel(myrects)
+
         tableView = QTableView()
-        model = CustomModel()
         tableView.setModel(model)
         tableView.adjustSize()
+
         listView = QListView()
         listView.setModel(model)
+
         treeView = QTreeView()
         treeView.setModel(model)
 
