@@ -1,10 +1,11 @@
 import sys
 
-import view as v
+from model import Rectangle
 from model import  CustomModel
 from PyQt5 import Qt
+from PyQt5.QtCore import Qt, QModelIndex
 from PyQt5.QtWidgets import QApplication, \
-    QMainWindow, QLabel, QComboBox, QGridLayout, QPushButton, QWidget, QTableView, QListView
+    QMainWindow, QLabel, QComboBox, QGridLayout, QPushButton, QWidget, QTableView, QListView, QTreeView
 from PyQt5.QtGui import QPalette, QColor
 
 class MainWindow(QMainWindow):
@@ -19,18 +20,19 @@ class MainWindow(QMainWindow):
         tableView = QTableView()
         model = CustomModel()
         tableView.setModel(model)
-        tableView.show()
+        tableView.adjustSize()
         listView = QListView()
         listView.setModel(model)
-        listView.show()
+        treeView = QTreeView()
+        treeView.setModel(model)
 
         layout = QGridLayout()
-
         views = QComboBox()
         views.addItems(["One", "Two", "Three"])
-        layout.addWidget(QLabel('A list of views'), 0, 0)
-        layout.addWidget(views, 0, 1)
+        layout.addWidget(tableView, 0, 0)
+        layout.addWidget(listView, 0, 1)
+        layout.addWidget(treeView, 0, 2)
 
         widget = QWidget()
         widget.setLayout(layout)
-        self.setCentralWidget(listView)
+        self.setCentralWidget(widget)
