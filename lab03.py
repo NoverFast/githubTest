@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import math
+import gzWrapper
 import sys
 import time
 import numpy
@@ -182,6 +183,7 @@ if __name__ == '__main__':
     print('Assigned all values. Beginning calculation\n\n\n')
     # Решение системы методом Гаусса-Зейделя
     iter_num, u0, residual = GaussZeidel(u1, u0, black, red, f)
+    #iter_num, u0, u1, residual = gzWrapper.gauss_zeid_plus(u0, u1, red, black, f, n, ny, bnum, rnum, eps, a1, an, ai)
 
     td = time.time() - td
 
