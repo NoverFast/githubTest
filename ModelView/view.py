@@ -96,6 +96,7 @@ class MainWindow(QMainWindow):
         value = Rectangle(self.x.value(), self.y.value(), self.width.value(), self.height.value())
         self.model.setData(getIndex, value, Qt.EditRole)
     def insertRectangle(self):
-        self.model.insertRow(self.indexSB.value())
+        val = self.indexSB.value()
+        self.model.insertRow(val)
     def deleteRectangle(self):
         self.model.removeRow(self.indexSB.value())

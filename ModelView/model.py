@@ -35,7 +35,6 @@ class RectangleModel(QAbstractListModel):
         return len(self._rects)
 
     def data(self, index, role=Qt.DisplayRole):
-        print(len(self._rects))
         row = index.row()
         col = index.column()
         if role == Qt.DisplayRole or role == Qt.EditRole:
@@ -52,10 +51,12 @@ class RectangleModel(QAbstractListModel):
         return False
 
     def insertRows(self, row: int, count: int, parent: QModelIndex = QModelIndex()):
+        val = row
+        obj = Rectangle(val, val, val * 16, val * 16)
         """Inserts a number of rows into the model at the specified position."""
         self.beginInsertRows(QModelIndex(), row, row + count - 1)
         for row in range(count):
-            self._rects.insert(row, Rectangle(count, count, count * 16, count * 16))
+            self._rects.append(obj)
         self.endInsertRows()
         return True
 
@@ -63,6 +64,6 @@ class RectangleModel(QAbstractListModel):
         """Removes a number of rows from the model at the specified position."""
         self.beginRemoveRows(QModelIndex(), row, row + count - 1)
         for row in range(count):
-            del self._rects[row]
+            self._rects.pop(row)
         self.endRemoveRows()
         return True
