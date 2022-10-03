@@ -1,13 +1,12 @@
 import sys
 
 from model import Rectangle
-from model import  CustomModel
+from model import RectangleModel
 from PyQt5 import Qt
-from PyQt5.QtCore import Qt, QModelIndex
+from PyQt5.QtCore import Qt, QModelIndex, QItemSelectionModel
 from PyQt5.QtWidgets import QApplication, \
     QMainWindow, QLabel, QComboBox, QGridLayout, QPushButton, QWidget, QTableView, QListView, QTreeView, QLineEdit, \
     QSpinBox, QListWidget, QListWidgetItem, QVBoxLayout
-from PyQt5.QtGui import QPalette, QColor
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -23,7 +22,7 @@ class MainWindow(QMainWindow):
 
     def initMV(self):
         #   моя модель с прямоугольниками
-        self.model = CustomModel(self.myrects)
+        self.model = RectangleModel(self.myrects)
         # и её разные отображения в окне программы
         self.tableView = QTableView()
         self.tableView.setModel(self.model)
@@ -33,6 +32,9 @@ class MainWindow(QMainWindow):
 
         self.treeView = QTreeView()
         self.treeView.setModel(self.model)
+
+        self.listView.setSelectionModel(self.tableView.selectionModel())
+        self.treeView.setSelectionModel(self.tableView.selectionModel())
 
     def initUI(self):
         self.setWindowTitle("Lab 4")
@@ -48,10 +50,24 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.treeView, 0, 2)
         layout2.addLayout(layout, 0, 0)
 
-        layout3.addWidget(QLabel("Add Rectangle: "))
-        btn = QPushButton("Add Rectangle")
-        btn.clicked.connect(self.addRectangle)
-        layout3.addWidget(btn)
+        layout3.addWidget(QLabel("Replace Rectangle: "))
+        replaceBtn = QPushButton("Replace Rectangle")
+        replaceBtn.clicked.connect(self.replaceRectangle)
+        layout3.addWidget(replaceBtn)
+        insertBtn = QPushButton("Insert Rectangle")
+        insertBtn.clicked.connect(self.insertRectangle)
+        layout3.addWidget(QLabel("Insert Rectangle: "))
+        layout3.addWidget(insertBtn)
+        removeBtn = QPushButton("Remove Rectangle")
+        removeBtn.clicked.connect(self.deleteRectangle)
+        layout3.addWidget(QLabel("Remove Rectangle: "))
+        layout3.addWidget(removeBtn)
+        layout3.addWidget(QLabel("x: "))
+        self.x = QSpinBox()
+        layout3.addWidget(self.x)
+        self.y = QSpinBox()
+        layout3.addWidget(QLabel("y: "))
+        layout3.addWidget(self.y)
         self.width = QSpinBox()
         self.height = QSpinBox()
         layout3.addWidget(QLabel("Width: "))
@@ -75,7 +91,11 @@ class MainWindow(QMainWindow):
         value = self.model.data(getIndex, Qt.DisplayRole)
         print(f"Rectangle area: {value}")
 
-    def addRectangle(self):
-        print("a")
-        QListWidgetItem(Rectangle(1, 1, self.width.value(), self.height.value()), self.listWidget)
-        print("b")
+    def replaceRectangle(self):
+        getIndex = self.model.index(self.indexSB.value(), 0, QModelIndex())
+        value = Rectangle(self.x.value(), self.y.value(), self.width.value(), self.height.value())
+        self.model.setData(getIndex, value, Qt.EditRole)
+    def insertRectangle(self):
+        self.model.insertRow(self.indexSB.value())
+    def deleteRectangle(self):
+        self.model.removeRow(self.indexSB.value())
